@@ -67,8 +67,8 @@ val run: ?and_exit:bool -> ?argv:string array ->
 val run_with_args: ?and_exit:bool -> ?argv:string array ->
   string -> 'a Cmdliner.Term.t -> 'a test list -> unit
 (** [run_with_args n a t] Similar to [run a t] but take an extra
-    argument [a]. Every test function will receive as arguement the
-    evaluation of the [Cdmliner] term [a]: this is useful to configure
+    argument [a]. Every test function will receive as argument the
+    evaluation of the [Cmdliner] term [a]: this is useful to configure
     the test behaviors using the CLI. *)
 
 (** {2 Assert functions} *)
