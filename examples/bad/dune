@@ -1,6 +1,6 @@
 (executable
  (name bad)
- (libraries alcotest))
+ (libraries alcotest-unix))
 
 ; This fails at runtime, so just build the executable
 

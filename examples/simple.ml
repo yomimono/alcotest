@@ -36,10 +36,10 @@ end
 
 (* The tests *)
 let capit () =
-  Alcotest.(check char) "Check A" 'A' (To_test.capit 'a')
+  Alcotest_unix.(check char) "Check A" 'A' (To_test.capit 'a')
 
 let plus () =
-  Alcotest.(check int) "Sum equals to 7" 7 (To_test.plus [1;1;2;3])
+  Alcotest_unix.(check int) "Sum equals to 7" 7 (To_test.plus [1;1;2;3])
 
 let test_set = [
   "\xF0\x9F\x90\xAB  Capitalize", `Quick, capit;
@@ -48,7 +48,7 @@ let test_set = [
 
 (* Run it *)
 let () =
-  Alcotest.run "My first test" [
+  Alcotest_unix.run "My first test" [
     "test_1", test_set;
     "test_2", test_set;
   ]

@@ -28,6 +28,8 @@ For more information, please refer to <http://unlicense.org/>
 (* Build with
  * ocamlbuild -pkg alcotest bad.byte *)
 
+module Alcotest = Alcotest_unix
+
 (* A module with functions to test *)
 module To_test = struct
   let capit letter = Astring.String.Ascii.uppercase letter
