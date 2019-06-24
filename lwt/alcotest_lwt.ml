@@ -26,4 +26,4 @@ let run fn args =
   Lwt_switch.with_switch (fun sw -> Lwt.pick [fn sw args; async_ex])
 
 let test_case n s f =
-  Alcotest.test_case n s (run f)
+  Alcotest_unix.test_case n s (run f)

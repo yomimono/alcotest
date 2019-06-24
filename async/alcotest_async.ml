@@ -6,11 +6,11 @@ let run timeout name fn args =
   Thread_safe.block_on_async_exn (fun () ->
       Clock.with_timeout timeout (fn args) >>| function
       | `Result x -> x
-      | `Timeout -> Alcotest.fail (
+      | `Timeout -> Alcotest_unix.fail (
           Printf.sprintf "%s timed out after %s"
             name (Time.Span.to_string_hum timeout)
         )
     )
 
 let test_case ?(timeout=sec 2.) name s f =
-  Alcotest.test_case name s (run timeout name f)
+  Alcotest_unix.test_case name s (run timeout name f)
