@@ -34,17 +34,17 @@ module Common = struct
 end
 
 module type S = sig
-  
+  type u
   type speed_level = [`Quick | `Slow]
   (** Speed level of a test. Tests marked as [`Quick] are always run. Tests marked
      as [`Slow] are skipped when the `-q` flag is passed. *)
   
-  type 'a test_case = string * speed_level * ('a -> unit)
+  type 'a test_case = string * speed_level * ('a -> u)
   (** A test case is an UTF-8 encoded documentation string, a speed
       level and a function to execute. Typically, the testing function calls the
       helper functions provided below (such as [check] and [fail]). *)
   
-  val test_case: string -> speed_level -> ('a -> unit) -> 'a test_case
+  val test_case: string -> speed_level -> ('a -> u) -> 'a test_case
   (** [test_case n s f] is the test case [n] running at speed [s] using
       the function [f]. *)
   

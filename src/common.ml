@@ -21,8 +21,6 @@ exception Check_error of string
 (* Types *)
 type speed_level = [`Quick | `Slow]
 
-type 'a run
-
 type path = Path of (string * int)
 
 type run_result = [
@@ -35,11 +33,7 @@ type run_result = [
 
 type 'a rrun = 'a -> run_result
 
-type 'a test_case = string * speed_level * 'a run
-
 let test_case n s f = (n, s, f)
-
-type 'a test = string * 'a test_case list
 
 (* global state *)
 type 'a t = {
@@ -224,20 +218,6 @@ let exn path name err =
   let err = Printf.sprintf "%s%s" err (bt ()) in
   `Exn (path, name, err)
 
-let protect_test path (f:'a run): 'a rrun =
-  fun args ->
-    try f args; `Ok
-    with
-    | Check_error err ->
-      let err = Printf.sprintf "Test error: %s%s" err (bt ()) in
-      `Error (path, err)
-    | Failure f -> exn path "failure" f
-    | Invalid_argument f -> exn path "invalid" f
-    | e -> exn path "exception" (Printexc.to_string e)
-(* ah, because `error` is in Alcotest_unix now *)
-(* I think it's a function, which we can't make abstract... *)
-(* we can keep pulling stuff out and stop once it builds *)
-             (* yes, exactly :) *)
 let skip_fun _ = `Skip
 
 let skip_label (path, _) = path, skip_fun
@@ -286,31 +266,6 @@ let err_ascii s =
       "%S is not a valid test label (it should be an ASCII string), skipping." s
   in
   Fmt.(pf stderr) "%a %s\n%!" red "Error:" err
-
-let register t name (ts: 'a test_case list) =
-  if not (is_ascii name) then (err_ascii name; t)
-  else (
-    let max_label = max t.max_label (String.length name) in
-    let paths = Hashtbl.create 16 in
-    let docs = Hashtbl.create 16 in
-    let speeds = Hashtbl.create 16 in
-    let ts = List.mapi (fun i (doc, speed, test) ->
-        let path = Path (name, i) in
-        let doc =
-          if doc = "" || doc.[String.length doc - 1] = '.' then doc
-          else doc ^ "." in
-        Hashtbl.add paths path true;
-        Hashtbl.add docs path doc;
-        Hashtbl.add speeds path speed;
-        path, protect_test path test
-      ) ts in
-    let tests = t.tests @ ts in
-    let paths = Hashtbl.fold (fun k _ acc -> k :: acc) paths [] in
-    let paths = t.paths @ paths in
-    let doc p = try Some (Hashtbl.find docs p) with Not_found -> t.doc p in
-    let speed p = try Some (Hashtbl.find speeds p) with Not_found -> t.speed p in
-    { t with paths; tests; doc; speed; max_label; }
-  )
 
 exception Test_error
 

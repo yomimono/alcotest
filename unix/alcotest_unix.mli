@@ -14,9 +14,9 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *)
 
-include Alcotest.S
+include Alcotest.S with type u = unit
 
-type 'a run = 'a -> unit
+type 'a run = 'a -> u
 
 val check: 'a testable -> string -> 'a -> 'a -> unit
 (** Check that two values are equal. *)

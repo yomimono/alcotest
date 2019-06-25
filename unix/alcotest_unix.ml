@@ -18,6 +18,14 @@ open Astring
 
 include Alcotest.Common
 
+type u = unit
+
+type 'a run = 'a -> u
+
+type 'a test_case = string * speed_level * 'a run
+
+type 'a test = string * 'a test_case list
+
 let mkdir_p path mode =
   let is_win_drive_letter x =
     String.length x = 2
@@ -169,6 +177,42 @@ let make_result t test args =
   let success = List.length (List.filter has_run results) in
   let failures = List.filter failure results in
   { time; success; failures = List.length failures }
+
+let protect_test path (f:'a run): 'a rrun =
+  fun args ->
+    try f args; `Ok
+    with
+    | Check_error err ->
+      let err = Printf.sprintf "Test error: %s%s" err (bt ()) in
+      `Error (path, err)
+    | Failure f -> exn path "failure" f
+    | Invalid_argument f -> exn path "invalid" f
+    | e -> exn path "exception" (Printexc.to_string e)
+
+let register t name (ts: 'a test_case list) =
+  if not (is_ascii name) then (err_ascii name; t)
+  else (
+    let max_label = max t.max_label (String.length name) in
+    let paths = Hashtbl.create 16 in
+    let docs = Hashtbl.create 16 in
+    let speeds = Hashtbl.create 16 in
+    let ts = List.mapi (fun i (doc, speed, test) ->
+        let path = Path (name, i) in
+        let doc =
+          if doc = "" || doc.[String.length doc - 1] = '.' then doc
+          else doc ^ "." in
+        Hashtbl.add paths path true;
+        Hashtbl.add docs path doc;
+        Hashtbl.add speeds path speed;
+        path, protect_test path test
+      ) ts in
+    let tests = t.tests @ ts in
+    let paths = Hashtbl.fold (fun k _ acc -> k :: acc) paths [] in
+    let paths = t.paths @ paths in
+    let doc p = try Some (Hashtbl.find docs p) with Not_found -> t.doc p in
+    let speed p = try Some (Hashtbl.find speeds p) with Not_found -> t.speed p in
+    { t with paths; tests; doc; speed; max_label; }
+  )
 
 let run_registered_tests t () args =
   let result = make_result t t.tests args in
