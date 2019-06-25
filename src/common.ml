@@ -21,7 +21,7 @@ exception Check_error of string
 (* Types *)
 type speed_level = [`Quick | `Slow]
 
-type 'a run = 'a -> unit
+type 'a run
 
 type path = Path of (string * int)
 

@@ -16,6 +16,8 @@
 
 include Alcotest.S
 
+type 'a run = 'a -> unit
+
 val check: 'a testable -> string -> 'a -> 'a -> unit
 (** Check that two values are equal. *)
 
@@ -27,6 +29,22 @@ val fail: string -> 'a
 
 val failf: ('a, Format.formatter, unit, 'b) format4 -> 'a
 (** Simply fail with a formatted message. *)
+
+val run: ?and_exit:bool -> ?argv:string array ->
+  string -> unit test list -> unit
+(** [run n t] runs the test suite [t]. [n] is the name of the
+    tested library.
+
+    The optional argument [and_exit] controls what happens when the
+    function ends. By default, [and_exit] is set, which makes the
+    function exit with [0] if everything is fine or [1] if there is an
+    issue. If [and_exit] is [false], then the function raises
+    [Test_error] on error.
+
+    The optional argument [argv] specifies the argument sent to
+    alcotest like ["--json"], ["--verbose"], etc. (at least one
+    argument is required).*)
+
 
 val run_with_args: ?and_exit:bool -> ?argv:string array ->
   string -> 'a Cmdliner.Term.t -> 'a test list -> unit

@@ -293,15 +293,6 @@ let show_line msg =
   Printf.eprintf "ASSERT %s\n" msg;
   line Fmt.stderr ~color:`Yellow '-'
 
-let line (oc:out_channel) ?color c =
-  let color = match color with
-    | None         -> None
-    | Some `Blue   -> Some `Cyan
-    | Some `Yellow -> Some `Yellow
-  in
-  let str: string = Fmt.(to_to_string @@ fun ppf -> line ppf ?color) c in
-  Printf.fprintf oc "%s" str
-
 let fail = Alcotest.Common.fail ~show_line
 let failf fmt = Alcotest.Common.failf ~show_line fmt
 let check = Alcotest.Common.check ~show_line

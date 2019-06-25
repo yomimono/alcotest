@@ -55,21 +55,6 @@ module type S = sig
   exception Test_error
   (** The exception return by {!run} in case of errors. *)
   
-  val run: ?and_exit:bool -> ?argv:string array ->
-    string -> unit test list -> unit
-  (** [run n t] runs the test suite [t]. [n] is the name of the
-      tested library.
-  
-      The optional argument [and_exit] controls what happens when the
-      function ends. By default, [and_exit] is set, which makes the
-      function exit with [0] if everything is fine or [1] if there is an
-      issue. If [and_exit] is [false], then the function raises
-      [Test_error] on error.
-  
-      The optional argument [argv] specifies the argument sent to
-      alcotest like ["--json"], ["--verbose"], etc. (at least one
-      argument is required).*)
-  
   (** {2 Assert functions} *)
   
   (** [TESTABLE] provides an abstract description for testable
@@ -169,18 +154,4 @@ module type S = sig
   val check_raises: show_line:(string -> unit) -> string -> exn -> (unit -> unit) -> unit
   (** Check that an exception is raised. *)
   
-  (** {2 Deprecated} *)
-  
-  val line: out_channel -> ?color:[`Blue|`Yellow] -> char -> unit
-  (** @deprecated
-      You should write your own line function. For instance:
-  {[
-  let line ppf ?color c =
-    let line = String.v ~len:terminal_columns (fun _ -> c) in
-    match color with
-    | Some c -> Fmt.pf ppf "%a\n%!" Fmt.(styled c string)  line
-    | None   -> Fmt.pf ppf "%s\n%!"line
-  ]}
-  *)
-
 end
