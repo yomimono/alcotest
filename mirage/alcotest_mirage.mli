@@ -1,5 +1,4 @@
-include Alcotest.S
-
+include Alcotest.S with type u = unit Lwt.t
 type 'a run = 'a -> u
 
 val check: 'a testable -> string -> 'a -> 'a -> unit
