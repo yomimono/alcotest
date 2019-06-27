@@ -1,5 +1,7 @@
 include Alcotest.S
 
+type 'a run = 'a -> u
+
 val check: 'a testable -> string -> 'a -> 'a -> unit
 (** Check that two values are equal. *)
 

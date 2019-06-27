@@ -35,6 +35,8 @@ end
 
 module type S = sig
   type u
+  (** unit, unit Lwt.t, or unit Async.deferred *)
+
   type speed_level = [`Quick | `Slow]
   (** Speed level of a test. Tests marked as [`Quick] are always run. Tests marked
      as [`Slow] are skipped when the `-q` flag is passed. *)
